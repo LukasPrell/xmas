@@ -124,6 +124,7 @@ h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(
           <button class="btn yes pick" type="button" data-pa="EV / Dynacord">EV / Dynacord</button>
           <button class="btn yes pick" type="button" data-pa="L-Acoustics">L-Acoustics</button>
         </div>
+        <div class="what" id="pa-feedback" aria-live="polite"></div>
       </div>
       <div class="solved small" id="solved" hidden aria-live="polite"></div>
       <a class="btn yes" id="yes" href="#" target="_blank" rel="noopener" hidden>Ich bin dabei</a>
@@ -154,21 +155,24 @@ h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(
 
   var riddle = document.getElementById('riddle');
   var solved = document.getElementById('solved');
-  function unlock(pa) {
-    var other = pa === 'L-Acoustics' ? 'EV / Dynacord' : 'L-Acoustics';
+  var paFeedback = document.getElementById('pa-feedback');
+  function unlock() {
     riddle.hidden = true;
-    solved.textContent = 'Richtig! ' + other + ' wäre auch richtig gewesen. Deine Zusage ist freigeschaltet.';
+    solved.textContent = 'Richtig! Deine Zusage ist freigeschaltet.';
     solved.hidden = false;
     document.getElementById('yes').hidden = false;
   }
   Array.prototype.forEach.call(document.querySelectorAll('.pick'), function (btn) {
     btn.addEventListener('click', function () {
-      var pa = btn.getAttribute('data-pa');
-      try { localStorage.setItem('riddle-pa', pa); } catch (err) {}
-      unlock(pa);
+      if (btn.getAttribute('data-pa') === 'L-Acoustics') {
+        try { localStorage.setItem('pa-solved', '1'); } catch (err) {}
+        unlock();
+      } else {
+        paFeedback.textContent = 'Naja, weil Weihnachten ist, hast du noch eine Chance.';
+      }
     });
   });
-  try { var savedPa = localStorage.getItem('riddle-pa'); if (savedPa) unlock(savedPa); } catch (err) {}
+  try { if (localStorage.getItem('pa-solved') === '1') unlock(); } catch (err) {}
 
   var logo = document.getElementById('logo');
   var game = document.getElementById('game');
