@@ -62,8 +62,7 @@ h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(
 .riddle { display: flex; flex-direction: column; gap: 8px; padding: 14px 0 6px; border-top: 3px solid var(--ink); }
 .q { margin: 0; }
 .try { display: flex; gap: 8px; }
-.try input { flex: 1 1 0; min-width: 0; min-height: 52px; padding: 8px 12px; border: 3px solid var(--ink); border-radius: 12px; background: var(--card); color: var(--ink); font: 500 18px var(--body); }
-.try .btn { flex: none; }
+.try .btn { flex: 1 1 0; min-width: 0; }
 .solved { color: var(--ink); font-weight: 700; }
 .hint { text-align: center; color: #FFFFFF; font-weight: 500; font-size: 15px; }
 :focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
@@ -117,18 +116,16 @@ h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(
       </div>
     </div>
     <div class="rsvp">
-      <form class="riddle" id="riddle">
+      <div class="riddle" id="riddle">
         <div class="tag">ZUSAGE FREISCHALTEN</div>
-        <div class="what">Erst das Rätsel, dann die Zusage.</div>
-        <p class="q">Ich trage viele Lichter, habe aber keinen DMX-Anschluss. Ich bin nur im Dezember gebucht, und beim Abbau nadle ich. Wer bin ich?</p>
-        <label class="small" for="answer">Deine Antwort</label>
+        <div class="what">Die wichtigste Frage des Jahres:</div>
+        <p class="q">Welche PA ist die beste?</p>
         <div class="try">
-          <input id="answer" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" required>
-          <button class="btn yes" type="submit">Prüfen</button>
+          <button class="btn yes pick" type="button" data-pa="EV / Dynacord">EV / Dynacord</button>
+          <button class="btn yes pick" type="button" data-pa="L-Acoustics">L-Acoustics</button>
         </div>
-        <div class="small" id="feedback" aria-live="polite"></div>
-      </form>
-      <div class="solved small" id="solved" hidden>Richtig! Deine Zusage ist freigeschaltet.</div>
+      </div>
+      <div class="solved small" id="solved" hidden aria-live="polite"></div>
       <a class="btn yes" id="yes" href="#" target="_blank" rel="noopener" hidden>Ich bin dabei</a>
       <a class="btn no" id="no" href="#" target="_blank" rel="noopener">Ich kann leider nicht</a>
       <div class="small">Die Buttons öffnen WhatsApp mit einem fertigen Text. Schick ihn an Lukas, erst dann ist deine Antwort da.</div>
@@ -156,31 +153,22 @@ h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(
   document.getElementById('no').href = waLink('Ich schaffe es leider nicht zur Stereolight-Weihnachtsfeier am 20.12.');
 
   var riddle = document.getElementById('riddle');
-  var answer = document.getElementById('answer');
-  var feedback = document.getElementById('feedback');
-  var misses = 0;
-  function unlock() {
+  var solved = document.getElementById('solved');
+  function unlock(pa) {
+    var other = pa === 'L-Acoustics' ? 'EV / Dynacord' : 'L-Acoustics';
     riddle.hidden = true;
-    document.getElementById('solved').hidden = false;
+    solved.textContent = 'Richtig! ' + other + ' wäre auch richtig gewesen. Deine Zusage ist freigeschaltet.';
+    solved.hidden = false;
     document.getElementById('yes').hidden = false;
   }
-  function isRight(text) {
-    var t = text.toLowerCase().replace(/[^a-zäöüß]/g, '');
-    return t.indexOf('baum') !== -1 || t.indexOf('tanne') !== -1 || t.indexOf('fichte') !== -1;
-  }
-  riddle.addEventListener('submit', function (e) {
-    e.preventDefault();
-    if (isRight(answer.value)) {
-      try { localStorage.setItem('riddle-solved', '1'); } catch (err) {}
-      unlock();
-      return;
-    }
-    misses += 1;
-    if (misses >= 4) feedback.textContent = 'Du hast es dir verdient: Die Antwort ist „Christbaum“.';
-    else if (misses >= 2) feedback.textContent = 'Tipp: Er steht bald im Wohnzimmer.';
-    else feedback.textContent = 'Nicht ganz. Versuch es nochmal.';
+  Array.prototype.forEach.call(document.querySelectorAll('.pick'), function (btn) {
+    btn.addEventListener('click', function () {
+      var pa = btn.getAttribute('data-pa');
+      try { localStorage.setItem('riddle-pa', pa); } catch (err) {}
+      unlock(pa);
+    });
   });
-  try { if (localStorage.getItem('riddle-solved') === '1') unlock(); } catch (err) {}
+  try { var savedPa = localStorage.getItem('riddle-pa'); if (savedPa) unlock(savedPa); } catch (err) {}
 
   var logo = document.getElementById('logo');
   var game = document.getElementById('game');
