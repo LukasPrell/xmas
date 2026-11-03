@@ -129,7 +129,7 @@ h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(
       <div class="solved small" id="solved" hidden aria-live="polite"></div>
       <a class="btn yes" id="yes" href="#" target="_blank" rel="noopener" hidden>Ich bin dabei</a>
       <a class="btn no" id="no" href="#" target="_blank" rel="noopener">Ich kann leider nicht</a>
-      <div class="small">Die Buttons öffnen WhatsApp mit einem fertigen Text. Schick ihn an Lukas, erst dann ist deine Antwort da.</div>
+      <div class="small">Die Buttons öffnen WhatsApp mit einem fertigen Text. Tippe dort auf Senden, erst dann ist deine Antwort da.</div>
     </div>
   </section>
 
@@ -150,8 +150,9 @@ h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(
 <script>
 (function () {
   var waLink = function (text) { return 'https://wa.me/?text=' + encodeURIComponent(text); };
-  document.getElementById('yes').href = waLink('Bin bei der Stereolight-Weihnachtsfeier am 20.12. dabei!');
-  document.getElementById('no').href = waLink('Ich schaffe es leider nicht zur Stereolight-Weihnachtsfeier am 20.12.');
+  var waDirect = function (text) { return 'https://wa.me/4917624864226?text=' + encodeURIComponent(text); };
+  document.getElementById('yes').href = waDirect('Bin bei der Stereolight-Weihnachtsfeier am 20.12. dabei!');
+  document.getElementById('no').href = waDirect('Ich schaffe es leider nicht zur Stereolight-Weihnachtsfeier am 20.12.');
 
   var riddle = document.getElementById('riddle');
   var solved = document.getElementById('solved');
